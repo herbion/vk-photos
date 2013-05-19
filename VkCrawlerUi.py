@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'vk-crawler.ui'
 #
-# Created: Sat May 18 22:02:26 2013
+# Created: Sat May 18 23:32:35 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -105,7 +105,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.scanButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.progressBar = QtGui.QProgressBar(self.tab)
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setInvertedAppearance(False)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.verticalLayout.addWidget(self.progressBar)
@@ -147,7 +147,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.saveToFolderLineEdit.setPlaceholderText(_translate("MainWindow", "your downloaded files will be saved here", None))
-        self.linkToTargetLineEdit.setPlaceholderText(_translate("MainWindow", "http://vk.com/id1234", None))
+        self.linkToTargetLineEdit.setPlaceholderText(_translate("MainWindow", "http://vk.com/id1234 or id1234 or 1234 (must be valid user id)", None))
         self.label_2.setText(_translate("MainWindow", "Save to folder:", None))
         self.chooseSaveFolderButton.setText(_translate("MainWindow", "Choose", None))
         self.label.setText(_translate("MainWindow", "Link to target:", None))

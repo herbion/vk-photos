@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 import VkCrawlerUi, VkWrapper, LoginDialogUi
 from PyQt4 import QtGui, QtCore
-from model.Node import Node
 import types, urllib2
-
+from Utils import Utils
 import datetime
 
 _fromUtf8 = QtCore.QString.fromUtf8
 
-class Utils: 
-    @staticmethod
-    def to_human_time(unix):
-        return datetime.datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
-    
-    @staticmethod
-    def download_file(url, save_folder, progress_bar = None):
+class Downloader(QtCore.QThread):
+    def __init__(self, urls, save_to):
+        QtCore.QThread.__init__(self)
+        self.urls = urls
+        self.save_folder = save_to
+        
+    def download_file(self, url, save_folder, progress_bar = None):
         file_name = url.split('/')[-1]
         u = urllib2.urlopen(url)
         f = open(save_folder + file_name, 'wb')
@@ -31,26 +30,20 @@ class Utils:
         
             file_size_dl += len(buffer)
             f.write(buffer)
-            status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-            if progress_bar:
-                progress_bar.setProperty('value', file_size_dl * 100. / file_size)
-            status = status + chr(8)*(len(status)+1)
-            print status,
+            percent = str(int(file_size_dl * 100. / file_size))
+            self.emit(QtCore.SIGNAL("download_part(QString, QString)"), url, percent)
         
         f.close()
-        
-    @staticmethod
-    def buildTree(tree, root = None, item_type = None):
-        root = root or Node("Root Node")
-        for key in tree:
-            parent = Node(key, root, type_info = "TRANSFORM")
-            values = tree[key]
-            for item in values:
-                if isinstance(item, types.DictType):
-                    VkCrawler.buildTree(item, root=parent)
-                else :
-                    Node(item, parent, type_info="CAMERA")
-        return root
+
+    def run(self):
+        total = float(len(self.urls))
+        for i, url in enumerate(self.urls):
+            self.download_file(url, self.save_folder)
+            left = str(int((i+1)*100/total))
+            self.emit(QtCore.SIGNAL('download_done(QString, QString)'), url, left)
+
+
+
 class VkCrawler():
     def __init__(self, ui):
         self.window = QtGui.QMainWindow()
@@ -61,17 +54,15 @@ class VkCrawler():
                 
 
     def setupEvents(self):
-        #self.ui.columnView.setModel(self.model)    
-
         self.window.connect(self.ui.downloadButton, 
                             QtCore.SIGNAL("clicked()"), 
                             self.download)
         self.window.connect(self.ui.chooseSaveFolderButton, 
                             QtCore.SIGNAL("clicked()"), 
-                            self.chooseSaveFolder)
+                            self.select_save_folder)
         self.window.connect(self.ui.linkToTargetLineEdit, 
                             QtCore.SIGNAL("textChanged(QString)"),
-                            self.chooseVkTarget)
+                            self.select_vk_target)
         self.window.connect(self.ui.scanButton,
                             QtCore.SIGNAL("clicked()"),
                             self.scanForAlbums)
@@ -81,29 +72,54 @@ class VkCrawler():
     def selectAll(self):
         pass
     
-    def chooseVkTarget(self):        
+    def select_vk_target(self):        
         self.settings['target'] = self.ui.linkToTargetLineEdit.text()
-    def chooseSaveFolder(self):
+    
+    def select_save_folder(self):
         folder = str(QtGui.QFileDialog.getExistingDirectory(self.window, 
                                                             "Select Directory"))
         import os
         self.ui.saveToFolderLineEdit.setText(folder + os.path.sep)
         self.settings.update({'save_folder' :folder + os.path.sep})
+    
     def download(self):
-        total = len(self.download_list)
         save = self.settings['save_folder']
         self.notificate('Started downloading', 2000)
         self.ui.progressBar.setProperty('value', 0)
-        for (i, item) in enumerate(self.download_list):            
-            Utils.download_file(item['src'], save, item['pb'])
-            self.notificate('Downloaded file %s successfully' % item['src'], 1000 )
-            self.ui.progressBar.setProperty('value', int((i+1)*100/float(total)) )
-        self.notificate('All files saved in folder %s' % save, 1000 )
+        
+        if len(self.download_list) == 0:
+            self.show_message("Warning", "Please choose some urls first")
+            return
+        
+        self.downloader = Downloader(map(lambda item: item['src'], 
+                                         self.download_list), save)
+        
+        _items = dict(map(lambda item: (item['src'], item['pb']), 
+                          self.download_list))        
+    
+        def on_downloaded_file(fname, processed_percent):
+            _items[str(fname)].setProperty('value', 100)
+            self.ui.progressBar.setProperty('value', processed_percent)
+            if processed_percent == "100":
+                self.notificate("[Done] All files are downloaded ..", 2000)
+        def on_downloaded_part(fname, percent):
+            _items[str(fname)].setProperty('value', int(percent))
+        
+        QtCore.QObject.connect(self.downloader, 
+                               QtCore.SIGNAL('download_done(QString, QString)'), 
+                               on_downloaded_file, 
+                               QtCore.Qt.QueuedConnection)
+                             
+        QtCore.QObject.connect(self.downloader, 
+                               QtCore.SIGNAL("download_part(QString, QString)"), 
+                               on_downloaded_part, 
+                               QtCore.Qt.QueuedConnection)
+        self.downloader.start()       
         
     def scanForAlbums(self):          
         self.notificate("Started albums scanning ...", 2000)
         self._auth()
-        self.ui.picturesTableWidget.clearContent() ### 
+        #self.ui.picturesTableWidget.clearContent() ### 
         albums = None
         
         if not self.settings.has_key('target'):           
@@ -191,14 +207,17 @@ class VkCrawler():
     def onPictureClick(self, item):
         pics = self.ui.picturesTableWidget
         if item.checkState() == QtCore.Qt.Checked:
+            print "adding to donwload list", item.text()
             pb = pics.cellWidget(item.row(), 4)
             self.download_list.append({'src' : str(item.text()), 'pb' : pb })
         else :
             pb = pics.cellWidget(item.row(), 4)
+            print len(self.download_list)
             for download_obj in self.download_list:
                 if download_obj['src'] == str(item.text()):
+                    print "removing from list "
                     self.download_list.remove(download_obj)
-            
+            print len(self.download_list)
     def notificate(self, message, msecs = 200):
         self.ui.statusbar.showMessage(message, msecs)
         self.window.repaint()
@@ -221,8 +240,8 @@ class VkCrawler():
                 self.vk_wrapper.password = str(password)
             else :
                 raise Exception("Abort")
-        #self.vk_wrapper.login = ""
-        #self.vk_wrapper.password = ""
+        self.vk_wrapper.login = "import.future@gmail.com"
+        self.vk_wrapper.password = "steadyasshegoes"
 
         try :
             self.vk_wrapper.connect()

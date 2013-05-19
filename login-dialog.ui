@@ -42,10 +42,17 @@
       <property name="echoMode">
        <enum>QLineEdit::Password</enum>
       </property>
+      <property name="placeholderText">
+       <string>password to vk</string>
+      </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="loginLineEdit"/>
+     <widget class="QLineEdit" name="loginLineEdit">
+      <property name="placeholderText">
+       <string>login to vk</string>
+      </property>
+     </widget>
     </item>
     <item row="2" column="1">
      <widget class="QDialogButtonBox" name="buttonBox">
@@ -60,6 +67,11 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>loginLineEdit</tabstop>
+  <tabstop>passwordLineEdit</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

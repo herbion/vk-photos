@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'login-dialog.ui'
 #
-# Created: Sat May 18 20:42:17 2013
+# Created: Sat May 18 23:32:31 2013
 #      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,9 +56,13 @@ class Ui_Dialog(object):
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), Dialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+        Dialog.setTabOrder(self.loginLineEdit, self.passwordLineEdit)
+        Dialog.setTabOrder(self.passwordLineEdit, self.buttonBox)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Enter credentials", None))
         self.label.setText(_translate("Dialog", "login", None))
         self.label_2.setText(_translate("Dialog", "password", None))
+        self.passwordLineEdit.setPlaceholderText(_translate("Dialog", "password to vk", None))
+        self.loginLineEdit.setPlaceholderText(_translate("Dialog", "login to vk", None))
 
