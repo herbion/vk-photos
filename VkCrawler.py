@@ -2,7 +2,6 @@
 import VkCrawlerUi, VkWrapper, LoginDialogUi
 from PyQt4 import QtGui, QtCore
 import types, urllib2
-from Utils import Utils
 import datetime
 
 _fromUtf8 = QtCore.QString.fromUtf8
