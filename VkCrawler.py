@@ -69,6 +69,8 @@ class VkCrawler():
         self.window.connect(self.ui.selectAllButton,
                             QtCore.SIGNAL("clicked()"),
                             self.selectAll)
+        self.ui.picturesTableWidget.itemClicked.connect(self.onPictureClick)
+        
     def selectAll(self):
         pass
     
@@ -192,16 +194,18 @@ class VkCrawler():
                 progressBar.setProperty("value", 0)
                 progressBar.setInvertedAppearance(False)
                 pics.setCellWidget(row, len(attrs), progressBar)
-            pics.itemClicked.connect(self.onPictureClick)
+            
         else:
             print('"%s" Clicked' % item.text())
             removed_album = str(item.text())
             removed_rows = []
             for row in range(pics.rowCount()):
-                if pics.item(row, 1).text() == removed_album:
+                if str(pics.item(row, 1).text()) == removed_album:
                     removed_rows.append(row)
             for row in sorted(removed_rows, reverse=True):
                 pics.removeRow(row)
+            is_removed_album = lambda x: str(x['album']) != removed_album
+            self.download_list = filter(is_removed_album, self.download_list)
             self.window.repaint()
 
     def onPictureClick(self, item):
@@ -209,7 +213,10 @@ class VkCrawler():
         if item.checkState() == QtCore.Qt.Checked:
             print "adding to donwload list", item.text()
             pb = pics.cellWidget(item.row(), 4)
-            self.download_list.append({'src' : str(item.text()), 'pb' : pb })
+            album = pics.item(item.row(), 1).text()
+            self.download_list.append({'src' : str(item.text()), 
+                                       'pb' : pb,
+                                       'album' : str(album)})
         else :
             pb = pics.cellWidget(item.row(), 4)
             print len(self.download_list)
