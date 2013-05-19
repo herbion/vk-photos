@@ -247,8 +247,8 @@ class VkCrawler():
                 self.vk_wrapper.password = str(password)
             else :
                 raise Exception("Abort")
-        self.vk_wrapper.login = "import.future@gmail.com"
-        self.vk_wrapper.password = "steadyasshegoes"
+        self.vk_wrapper.login = ""
+        self.vk_wrapper.password = ""
 
         try :
             self.vk_wrapper.connect()
