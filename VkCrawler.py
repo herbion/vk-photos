@@ -2,6 +2,7 @@
 import VkCrawlerUi, VkWrapper, LoginDialogUi
 from PyQt4 import QtGui, QtCore
 import types, urllib2
+from Utils import Utils
 import datetime
 
 _fromUtf8 = QtCore.QString.fromUtf8
@@ -246,8 +247,6 @@ class VkCrawler():
                 self.vk_wrapper.password = str(password)
             else :
                 raise Exception("Abort")
-        self.vk_wrapper.login = ""
-        self.vk_wrapper.password = ""
 
         try :
             self.vk_wrapper.connect()
