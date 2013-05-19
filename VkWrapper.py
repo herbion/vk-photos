@@ -13,13 +13,11 @@ class VkWrapper():
             self.vk = vk_api.VkApi(self.login, self.password)  
     def is_ready(self):
         return not self.login == None and self
-    def get_albums(self):
-        albums = self.vk.method('photos.getAlbums', {})
-        return albums
-    def get_album(self, aid):
-        return self.vk.method('photos.get', {"aid": aid})
-if __name__ == "__main__" :
-    test = VkWrapper()
-    test.login = "im"
-    test.pasword = "s"
-    test.connect()
+    def get_albums(self, uid=None):
+        if not uid:
+            return self.vk.method('photos.getAlbums', {})
+        else:
+            return self.vk.method('photos.getAlbums', {'uid' : uid})
+#        return albums
+    def get_album(self, aid, uid):
+        return self.vk.method('photos.get', {"aid": aid, "uid" : uid})

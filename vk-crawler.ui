@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>543</height>
+    <width>619</width>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,13 +19,16 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>651</width>
-      <height>491</height>
+      <width>611</width>
+      <height>572</height>
      </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Download</string>
      </attribute>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -34,6 +37,16 @@
          <widget class="QLineEdit" name="saveToFolderLineEdit">
           <property name="placeholderText">
            <string>your downloaded files will be saved here</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QLineEdit" name="linkToTargetLineEdit">
+          <property name="inputMask">
+           <string/>
+          </property>
+          <property name="placeholderText">
+           <string>http://vk.com/id1234</string>
           </property>
          </widget>
         </item>
@@ -58,34 +71,88 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QLineEdit" name="linkToTargetLineEdit">
-          <property name="inputMask">
-           <string/>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTableWidget" name="albumsTableWidget">
+          <property name="sortingEnabled">
+           <bool>true</bool>
           </property>
-          <property name="placeholderText">
-           <string>http://vk.com/id1234</string>
+          <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>title</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>size</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>created</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>updated</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>aid</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="picturesTableWidget">
+          <property name="maximumSize">
+           <size>
+            <width>587</width>
+            <height>192</height>
+           </size>
           </property>
+          <column>
+           <property name="text">
+            <string>src</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>album</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>created</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>owner_id</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>progress</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QColumnView" name="columnView">
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-        <property name="textElideMode">
-         <enum>Qt::ElideMiddle</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="cancelButton">
+         <widget class="QPushButton" name="selectAllButton">
           <property name="text">
-           <string>Cancel</string>
+           <string>Select all</string>
           </property>
          </widget>
         </item>
@@ -123,13 +190,16 @@
         <property name="value">
          <number>24</number>
         </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
      </layout>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Upload</string>
      </attribute>
     </widget>
    </widget>
@@ -139,7 +209,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>651</width>
+     <width>619</width>
      <height>27</height>
     </rect>
    </property>
